@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>kipass</title>
+
+<!-- jQuery version 3.2.1 with a hash to ensure no tampering -->
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f"
+  crossorigin="anonymous"
+></script>
+
+<!-- Browserify compiled version -->
+<script src="dist.min.js"></script>
+
+<link
+  rel="stylesheet"
+  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+  integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+  crossorigin="anonymous"
+>
+
+<style>
+body {
+  padding-top: 1em;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="panel panel-default">
+  <div class="panel-body">
+    <div class="form-horizontal">
+
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="masterPassword">Master Password</label>
+        <div class="col-md-8">
+          <input id="masterPassword" placeholder="hunter42" class="form-control input-md" type="password">
+          <span class="help-block">A strong password you only have to remember once</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="domain">Domain/URL</label>
+        <div class="col-md-8">
+        <input id="domain" placeholder="reddit.com" class="form-control input-md" type="text" autocomplete="off">
+        <span class="help-block">A website that is asking for your password. Each domain name will get a unique password </span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="xxx">Alphabet:</label>
+        <div class="col-md-8">
+          <label class="checkbox-inline" for="alphabet-uppercase">
+            <input id="alphabet-uppercase" type="checkbox" checked>
+            Uppercase
+          </label>
+          <label class="checkbox-inline" for="alphabet-lowercase">
+            <input id="alphabet-lowercase" type="checkbox" checked>
+            Lowercase
+          </label>
+          <label class="checkbox-inline" for="alphabet-numbers">
+            <input id="alphabet-numbers" type="checkbox" checked>
+            Numbers
+          </label>
+          <label class="checkbox-inline" for="alphabet-punctuation">
+            <input id="alphabet-punctuation" type="checkbox" checked>
+            Puncuation
+          </label>
+
+          <span class="help-block">
+            Some websites may not allow some characters, simply uncheck the box
+            that makes that website mad.
+          </span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="textinput">Length:</label>
+        <div class="col-md-8">
+        <input
+          id="passwordLength"
+          value="12"
+          class="form-control input-md"
+          type="number"
+          autocomplete="off"
+        >
+        <span class="help-block">
+          Set the length of the password manually if a website gets mad because
+          it's too long.
+        </span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="domainPassword">Generated:</label>
+        <div class="col-md-8">
+          <input
+            id="domainPassword"
+            placeholder="A hard to guess password"
+            class="form-control input-md"
+            type="text"
+            readonly
+            autocomplete="off"
+          >
+          <p class="help-block">Use this password for the website</p>
+        </div>
+      </div>
+
+      <button id="generateButton" class="btn btn-primary btn-block">
+        <span class="glyphicon glyphicon-lock"></span>
+        Generate
+      </button>
+    </div>
+  </div>
+</div>
+</div>
+</body>
+</html>
