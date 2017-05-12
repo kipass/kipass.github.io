@@ -21,11 +21,7 @@
   crossorigin="anonymous"
 >
 
-<style>
-body {
-  padding-top: 1em;
-}
-</style>
+<link rel="stylesheet" href="kipass.css">
 </head>
 <body>
 <div class="container">
@@ -36,8 +32,24 @@ body {
       <div class="form-group">
         <label class="col-md-4 control-label" for="masterPassword">Master Password</label>
         <div class="col-md-8">
-          <input id="masterPassword" placeholder="hunter42" class="form-control input-md" type="password">
-          <span class="help-block">A strong password you only have to remember once</span>
+          <div class="form-inline">
+            <input id="masterPassword" placeholder="hunter42" class="form-control input-md" type="password">
+            <button class="btn btn-default" id="showPassword">
+              <span class="glyphicon glyphicon-eye-open"></span>
+            </button>
+            <div class="form-control-static">
+              <div id="integrity">
+                <span id="integrity-text"></span>
+                <span id="integrity-icon"></span>
+              </div>
+            </div>
+          </div>
+
+          <span class="help-block">
+            A strong password or phrase you must remember from which all other
+            passwords are derived. Take note of your avatar and it's color so you
+            know when you have typed your password correctly in the future.
+          </span>
         </div>
       </div>
 
@@ -67,6 +79,13 @@ body {
           <label class="checkbox-inline" for="alphabet-punctuation">
             <input id="alphabet-punctuation" type="checkbox" checked>
             Puncuation
+          </label>
+          <label class="checkbox-inline" for="alphabet-custom">
+            <input id="alphabet-custom" type="checkbox">
+            Custom
+            <span class="form-inline" id="alphabet-custom-form">
+              <input id="alphabet-custom-input" type="text" class="form-control">
+            </span>
           </label>
 
           <span class="help-block">

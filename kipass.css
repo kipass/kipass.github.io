@@ -1,0 +1,35 @@
+@font-face {
+  font-family: "EmojiSymbols";
+  src: url("EmojiSymbols-Regular.woff") format("woff");
+}
+
+body {
+  padding-top: 1em;
+}
+
+#alphabet-custom-form {
+  display: none;
+}
+
+#alphabet-custom:checked ~ #alphabet-custom-form {
+  display: inline;
+}
+
+#integrity {
+  display: inline-block;
+  line-height: 32px;
+}
+
+#integrity-text {
+  font-weight: bold;
+}
+
+#integrity-icon, #integrity-text {
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+#integrity-icon {
+  font-family: "EmojiSymbols";
+  font-size: 48px;
+}
