@@ -5,9 +5,11 @@ function kipass(cfg, f) {
   if (!cfg) { return f(new Error("Missing configuration")); }
   if (typeof cfg.masterPassword !== 'string') { return f(new Error("Missing master password")); }
   if (cfg.masterPassword.length < 6) { return f(new Error("Master password is too short")); }
-  if (!cfg.domain) { return f(new Error("Missing domain")); }
+  if (typeof cfg.domain !== 'string') { return f(new Error("Domain should be a string")); }
+  if (cfg.domain.length <= 0) { return f(new Error("Domain is too short")); }
+  cfg.length = Number(cfg.length);
+  if (cfg.length <= 0 || isNaN(cfg.length)) { return f(new Error("Missing password length")); }
   if (typeof cfg.alphabet !== 'string') { return f(new Error("Missing alphabet")); }
-  if (cfg.length <= 0) { return f(new Error("Missing password length")); }
   if (cfg.alphabet.length < 10) { return f(new Error("Password alphabet is too small")); }
 
   var hashedPassword = sha512(cfg.masterPassword);
@@ -16,25 +18,22 @@ function kipass(cfg, f) {
   var domainPassword = sha512(hashedPassword + masterPassword);
   var iterations = 1024 * 256;
 
-  crypto.pbkdf2(domainPassword, salt, iterations, 256, 'sha256', function (err, key) {
+  crypto.pbkdf2(domainPassword, salt, iterations, cfg.length, 'sha256', function (err, key) {
     if (err) {
       f(err);
-      return;
+    } else if (key.length !== cfg.length) {
+      f(new Error("Generated key is unexpected length"));
+    } else {
+      f(false, encode(cfg, key));
     }
-
-    f(false, encode(cfg, key));
   });
 };
 
 function encode(cfg, key) {
-  var chars = [];
-  var pos = 0, offset = 0;
-  var bytesPerChar = Math.floor(key.length / cfg.length);
-  if (bytesPerChar < 1) { throw new Error("Password length is too long for selected hash function"); }
+  var chars = [], pos = 0;
 
   while (chars.length < cfg.length) {
-    for (var i=0; i < bytesPerChar; i++) { offset ^= key[pos++] & 0xFF; }
-    chars.push(cfg.alphabet[offset % cfg.alphabet.length]);
+    chars.push(cfg.alphabet[(key[pos++] & 0xFF) % cfg.alphabet.length]);
   }
 
   return chars.join("");
