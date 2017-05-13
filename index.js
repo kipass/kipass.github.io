@@ -2,8 +2,8 @@
 var crypto = require('crypto');
 
 function kipass(cfg, f) {
-  if (!cfg) { return f(new Error("Missing configuration")); }
   if (typeof f !== 'function') { throw new Error("Missing callback"); }
+  if (!cfg) { return f(new Error("Missing configuration")); }
   if (typeof cfg.masterPassword !== 'string') { return f(new Error("Missing master password")); }
   if (cfg.masterPassword.length < 6) { return f(new Error("Master password is too short")); }
   if (typeof cfg.domain !== 'string') { return f(new Error("Domain should be a string")); }
