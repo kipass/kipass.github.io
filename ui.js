@@ -1,6 +1,7 @@
 "use strict";
 
 var kipass = require('./index.js');
+var animals = require('./animals.js');
 if (!kipass) { return alert("Failed to load kipass module"); }
 
 function reset() {
@@ -11,7 +12,7 @@ function reset() {
 function generate() {
   kipass({
     masterPassword: $('#masterPassword').val(),
-    domain: $('#domain').val(),
+    domain: parseDomain($('#url').val()),
     length: $('#passwordLength').val(),
     alphabets: getSelectedAlphabets(),
     condition: hasEachAlphabet
@@ -26,6 +27,17 @@ function generate() {
   });
 }
 
+function parseDomain(str) {
+  str = str.trim();
+  if (str.indexOf('.') < 0) { return ""; }
+  if (str.indexOf('//') < 0) { str = "http://" + str; }
+  try {
+    return new URL(str).host.toLowerCase();
+  } catch (err) {
+    return "";
+  }
+}
+
 function checkIntegrity() {
   reset();
 
@@ -33,24 +45,16 @@ function checkIntegrity() {
     return;
   }
 
-  var icons = {
-    cow: "🐄",
-    pig: "🐖",
-    goat: "🐐",
-    monkey: "🐒",
-    horse: "🐎",
-    snake: "🐍",
-    chicken: "🐔",
-    cat: "🐱",
-    dog: "🐶",
-    whale: "🐳"
-  };
-
   kipass({
     masterPassword: $('#masterPassword').val(),
     domain: "kipass.github.io",
     length: 2,
-    encoder: encodeIntegrity,
+    formatter: function (key) {
+      return {
+        color: kipass.translateByte(animals.colors, key[0]),
+        animal: kipass.translateByte(animals.names, key[1])
+      };
+    },
     condition: function () { return true; }
   }, function (err, integrity) {
     if (err) {
@@ -59,21 +63,10 @@ function checkIntegrity() {
       return;
     }
 
-    var parts = integrity.split(' ');
-    var color = parts[0];
-    var animal = parts[1];
-    $('#integrity').css('color', color);
-    $('#integrity-text').text(integrity);
-    $('#integrity-icon').text(icons[animal]);
+    $('#integrity').css('color', integrity.color);
+    $('#integrity-text').text(integrity.color + " " + integrity.animal);
+    $('#integrity-icon').text(animals.icons[integrity.animal]);
   });
-}
-
-function encodeIntegrity(key) {
-  var colors = ["yellow", "purple", "orange", "black", "green", "pink", "red", "blue"];
-  var animals = ["pig", "goat", "chicken", "cow", "cat", "dog", "snake", "monkey", "horse", "whale"];
-  var x = (key[0] & 0xFF) % colors.length;
-  var y = (key[1] & 0xFF) % animals.length;
-  return colors[x] + " " + animals[y];
 }
 
 function hasEachAlphabet(pass, cfg) {
@@ -108,20 +101,34 @@ function getAlphabet(selector, alphabet) {
   return $(selector).is(':checked') ? alphabet : null;
 }
 
+function togglePreview() {
+  if (isPreviewEnabled()) {
+    disablePreview();
+  } else {
+    enablePreview();
+  }
+}
+
+function isPreviewEnabled() {
+  return $('#masterPassword').attr('type') === 'text';
+}
+
+function disablePreview() {
+  $('#masterPassword').attr('type', 'password');
+  $('#showPassword').find('.glyphicon').addClass('glyphicon-eye-open').removeClass('glyphicon-eye-close');
+}
+
+function enablePreview() {
+  $('#masterPassword').attr('type', 'text');
+  $('#showPassword').find('.glyphicon').addClass('glyphicon-eye-close').removeClass('glyphicon-eye-open');
+}
+
 $(function () {
   $('#masterPassword')
     .keydown(reset)
     .change(checkIntegrity);
 
-  $('#showPassword').click(function () {
-    if ($('#masterPassword').attr('type') === 'text') {
-      $('#masterPassword').attr('type', 'password');
-      $(this).find('.glyphicon').removeClass('glyphicon-eye-open').addClass('glyphicon-eye-close');
-    } else {
-      $('#masterPassword').attr('type', 'text');
-      $(this).find('.glyphicon').removeClass('glyphicon-eye-close').addClass('glyphicon-eye-open');
-    }
-  });
+  $('#showPassword').click(togglePreview);
 
   $('#generateButton').click(function () {
     $('#domainPassword').val('Generating...');
