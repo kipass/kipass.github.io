@@ -2,29 +2,49 @@
 
 var kipass = require('./index.js');
 var animals = require('./animals.js');
-if (!kipass) { return alert("Failed to load kipass module"); }
+if (!kipass) { return showError("Failed to load kipass module"); }
 
-function reset() {
-  $('#domainPassword').val('');
-  $('#integrity *').text('');
-}
+function generatePassword() {
+  var domain, alphabet;
 
-function generate() {
+  domain = parseDomain($('#url').val());
+
+  if (domain.length <= 0) {
+    showError("Domain is invalid");
+    return;
+  }
+
+  alphabets = getSelectedAlphabets();
+
+  if (alphabets.length <= 0) {
+    showError("Alphabet is empty");
+    return;
+  }
+
   kipass({
     masterPassword: $('#masterPassword').val(),
-    domain: parseDomain($('#url').val()),
+    domain: domain,
     length: $('#passwordLength').val(),
-    alphabets: getSelectedAlphabets(),
+    alphabets: alphabets,
     condition: hasEachAlphabet
   }, function (err, pass) {
     if (err) {
-      alert("Unable to generate password because: " + String(err));
-      reset();
+      showError(err);
       return;
     }
 
     $('#domainPassword').val(pass);
   });
+}
+
+function showError(err) {
+  if (err instanceof Error) { err = err.message; }
+  err = $('<div class="alert alert-danger">').text(err);
+  $("#error").append(err);
+}
+
+function clearError() {
+  $("#error").empty();
 }
 
 function parseDomain(str) {
@@ -38,8 +58,13 @@ function parseDomain(str) {
   }
 }
 
+function resetIntegrity() {
+  $('#integrity *').text('');
+  clearError();
+}
+
 function checkIntegrity() {
-  reset();
+  resetIntegrity();
 
   if ($('#masterPassword').val().length <= 0) {
     return;
@@ -58,8 +83,7 @@ function checkIntegrity() {
     condition: function () { return true; }
   }, function (err, integrity) {
     if (err) {
-      alert("Unable to check integrity of password: " + String(err));
-      reset();
+      showError(err);
       return;
     }
 
@@ -123,22 +147,24 @@ function enablePreview() {
   $('#showPassword').find('.glyphicon').addClass('glyphicon-eye-close').removeClass('glyphicon-eye-open');
 }
 
+function generate() {
+  $('#domainPassword').val('Generating...');
+  clearError();
+
+  try {
+    generatePassword();
+  } catch (ex) {
+    console.trace(ex);
+    $('#domainPassword').val('');
+    showError(ex);
+  }
+}
+
 $(function () {
   $('#masterPassword')
-    .keydown(reset)
+    .keydown(resetIntegrity)
     .change(checkIntegrity);
 
   $('#showPassword').click(togglePreview);
-
-  $('#generateButton').click(function () {
-    $('#domainPassword').val('Generating...');
-
-    try {
-      generate();
-    } catch (ex) {
-      console.trace(ex);
-      $('#domainPassword').val('');
-      alert("An error was thrown. Check the console to see what happened and file a bug");
-    }
-  });
+  $('#generateButton').click(generate);
 });
