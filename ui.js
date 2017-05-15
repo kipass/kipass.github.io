@@ -5,7 +5,7 @@ var animals = require('./animals.js');
 if (!kipass) { return showError("Failed to load kipass module"); }
 
 function generatePassword() {
-  var domain, alphabet;
+  var domain, alphabets;
 
   domain = parseDomain($('#url').val());
 
